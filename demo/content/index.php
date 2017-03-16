@@ -9,36 +9,43 @@
   * You can set a custom password creating the file ".password" and adding the password as a plain text string.
   *
   */
+  
 
 
-session_start();
+/*	VARIABLES
+*************************/  
+$logged_in = false;
+$default_pwd = "guest"; //Default password
+
+
+/*	CONSTANTS
+*************************/  
 
 //GET CURRENT FOLDER NAME AS AN ESCAPED STRING
 define('FOLDER_NAME', strtoupper( preg_replace("/[^A-Za-z0-9]/",'',__DIR__) ));
 
 //GET CURRENT FOLDER PASSWORD FROM FILE OR SET THE FALLBACK
-define('FOLDER_PWD', file_exists(".password")? array_shift(file(".password")) : 'guest' );
+define('FOLDER_PWD', file_exists(".password")? array_shift(file(".password")) : $default_pwd );
 
 //GET FIRST HTM OR HTML FILE NAME IN CURRENT FOLDER
 $files_list = glob("*.htm*");
 define('HTML_FILE', $files_list[0]);
 
-$logged_in = false;
 
+/*	SCRIPT
+*************************/  
+session_start();
 
+//Loggout current user
 if(isset($_GET['logout']) ){
 	unset($_SESSION["WLSECURITY"][FOLDER_NAME]);
 }
 
-if( !empty($_POST['password']) ){
-	$password = $_POST['password'];
-}
-
 if( isset($_SESSION["WLSECURITY"][FOLDER_NAME]["PWD"]) && $_SESSION["WLSECURITY"][FOLDER_NAME]["PWD"] == FOLDER_PWD ){
 	$logged_in = true;
-}else if( $password == FOLDER_PWD ){
-	$logged_in = true;
+}else if( !empty($_POST['password']) && $_POST['password'] == FOLDER_PWD ){
 	$_SESSION["WLSECURITY"][FOLDER_NAME]["PWD"] = FOLDER_PWD;
+	$logged_in = true;
 }
 
 if( $logged_in ){
@@ -53,6 +60,8 @@ if( $logged_in ){
 	<title>Login - Wunderman</title>
 
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	<link rel="shortcut icon" href="data:image/ico;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAvnUANb51AK6+dQDgvnUA+b51AP++dQDovnUAr751AB4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD58ucBvnUAFb51ALC+dQD/vnUA/751AP++dQD/vnUA/751AP++dQC5vnUAEr51AAEAAAAAAAAAAAAAAAD16dcBvnUA0b51AEu+dQBRvnUA/751AP++dQD/vnUA/751AP++dQD/vnUAer51ADC+dQDlvnUAAgAAAAAAAAAAvnUAuL51AOO+dQCCvnUAKr51AP++dQD/vnUA/751AP++dQD/vnUA/b51AE2+dQCtvnUA5r51AMYAAAAA1qlgMb51APq+dQCOvnUA7L51AIK+dQDvvnUA/751AP++dQD/vnUA/751AOy+dQBvvnUA/L51AG++dQD/vnUAOb51AKi+dQD/xIIYJr51AP++dQDkvnUAnb51AP++dQD/vnUA/751AP++dQC/vnUAxr51AP++dQAUvnUA/751AMS+dQDbvnUA/751ADy+dQD/vnUA/751ACG+dQD/vnUA/751AP++dQD/vnUAQb51AP++dQD/vnUAWL51AP++dQD3vnUA/L51AMm+dQDCvnUA/751AP++dQAsvnUA/751AP++dQD/vnUA/751ACG+dQD/vnUA/751AOO+dQC6vnUA/751APy+dQBIvnUA/751AP++dQD/vnUAs751AOq+dQD/vnUA/751APK+dQCSvnUA/751AP++dQD/vnUAM751AP6+dQDl2K1oIr51AP++dQD/vnUA/751AP++dQBfvnUA/751AP++dQBvvnUA/b51AP++dQD/vnUA/751AB6+dQDcvnUAj751AIu+dQD/vnUA/751AP++dQD/vnUAFL51AP++dQD/vnUAH751AP++dQD/vnUA/751AP++dQCWvnUAjAAAAAC+dQDkvnUA/751AP++dQD/vnUA/751AGi+dQD+vnUA/b51AFu+dQD/vnUA/751AP++dQD/vnUA7QAAAAAAAAAAvnUAfr51AP++dQD/vnUA/751AP++dQDivnUAsr51AKq+dQDSvnUA/751AP++dQD/vnUA/751AKEAAAAAAAAAAAAAAAC+dQCjvnUA/751AP++dQD/vnUA+L51AEm+dQBcvnUA7L51AP++dQD/vnUA/751AKIAAAAAAAAAAAAAAAAAAAAAAAAAAL51AFe+dQD+vnUA/751AP++dQBFvnUAQb51AP++dQD/vnUA+r51AGoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAvnUAAb51AGG+dQCxvnUAib51AEi+dQCwvnUAc751AAIAAAAAAAAAAAAAAAAAAAAA+B8AAPAPAADYGwAAiBEAAIAVAAAgBAAAJCQAAAQgAABAAgAAQkIAAAJAAACCQQAAwAEAAMGDAADxjwAA/L8AAA==" />
 	
 	<!-- STYLE -->
 	<link rel="stylesheet" href="//bootswatch.com/paper/bootstrap.min.css">
@@ -194,7 +203,7 @@ if( $logged_in ){
 				<form id="frm-login" action="index.php" class="col-sm-8 col-sm-offset-2 col-md-4 col-md-offset-4" method="post">
 					<div class="card card-container">
 						
-						<input type="password" id="inputPassword" class="form-control" placeholder="Password" name="password" required>
+						<input type="password" id="inputPassword" class="form-control" placeholder="Example pass: <?php echo FOLDER_PWD; ?>" name="password" required>
 						<br/>
 						<button class="btn btn-lg btn-primary btn-block" type="submit">Login</button>
 						<input type="hidden" name="action" value="login">						
