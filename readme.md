@@ -1,10 +1,15 @@
-# _Really Basic_ Folder Security
+# u-oos-really-basic-folder-security
 
-This single PHP file acts as a gate and prevents the user from accessing the directory listing.
+A single PHP file that acts as a gate and prevents the user from accessing the directory listing without a password.
 
 It also gives the user a log in window that can be used to access the first .html (or .htm) file in the folder.
 
 This allows giving the user only the address of the folder, and limit access with a password.
+
+## Links
+
+- **Git**: <git@ec2-54-232-93-180.sa-east-1.compute.amazonaws.com:emailsfrontend-team/u-oos-really-basic-folder-security.git>
+
 
 ## Installation
 
